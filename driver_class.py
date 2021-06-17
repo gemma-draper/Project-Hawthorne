@@ -26,3 +26,10 @@ class Driver:
         """
         self.elements = self.driver.find_elements_by_xpath(xpath)
         return self.elements
+
+    def get_text(self, xpath=""):
+        """
+        Returns text from the element specified
+        """
+        self.text = self.driver.find_element_by_xpath(xpath).text
+        return self.text

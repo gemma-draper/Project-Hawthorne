@@ -1,21 +1,21 @@
 # Web scraper for tipsybartender.com
 # %%
 import pandas as pd
+from driver_class import Driver
 
 # initialise the web driver
-from selenium import webdriver
-from time import sleep
-driver = webdriver.Chrome()
+# from selenium import webdriver
+# from time import sleep
+# driver = webdriver.Chrome()
 
-# Set the URL. Sleep to allow site to load.
-driver.get('https://tipsybartender.com/drinks/all/')
-sleep(1)
+# Instantiate the driver
+d = Driver()
+d.get('https://tipsybartender.com/drinks/all/')
 
-# get all category names and urls.
-# store in a list of dicts.
+# store all category names and urls in a list of dicts.
 drinks_categories = []
 category_dict = {}
-all_categories = driver.find_elements_by_xpath('//div[contains(@class, "subcollection-list")]/a')
+all_categories = d.find_elements('//div[contains(@class, "subcollection-list")]/a')
 
 for category in all_categories:
     category_dict['url'] = category.get_attribute('href')
@@ -26,17 +26,15 @@ all_drinks = pd.DataFrame()
 drink_info = {}
 
 for category in drinks_categories:
-    # go to the url and wait
-    driver.get(category['url'])
-    sleep(1)
+    d.get(category['url'])
     # get the number of pages from the nav bar
-    number_of_pages = int(driver.find_element_by_xpath('//nav[@aria-label="Page navigation"]//li[last()-1]').text)
+    number_of_pages = int(d.get_text('//nav[@aria-label="Page navigation"]//li[last()-1]'))
     
     for i in range(1,number_of_pages+1):
         # iterate through all the pages in this category
-        driver.get(category['url'] + f'/page/{i}/')
+        d.get(category['url'] + f'/page/{i}/')
         #get all the drinks on this page
-        all_drinks_on_this_page = driver.find_elements_by_xpath('//div[contains(@class, "drink-card")]/a')
+        all_drinks_on_this_page = d.find_elements('//div[contains(@class, "drink-card")]/a')
         
         for drink in all_drinks_on_this_page:
             drink_info['category'] = category['category']
@@ -46,7 +44,7 @@ for category in drinks_categories:
             
 
         
-driver.quit()
+d.quit()
 #%%
 all_drinks.head()
 
