@@ -19,6 +19,10 @@ class Driver:
         self.page = self.driver.get(url)
         sleep(time)
         return self.page
+    
+    def quit(self):
+        self.driver.quit()
+        return
 
     def find_elements(self, xpath=""):
         """
