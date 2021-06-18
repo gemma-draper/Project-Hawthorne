@@ -35,7 +35,7 @@ class Driver:
         """
         Returns element with specified type.
         """
-        element = self.driver.find_element_by_xpath(f'//[@type={type}')
+        element = self.driver.find_element_by_xpath(f"//[@type='{type}'']")
         return element
        
 
