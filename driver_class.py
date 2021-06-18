@@ -12,28 +12,35 @@ class Driver:
         self.driver = webdriver.Chrome()
 
 
-    def get(self, url, time=1):
+    def get(self, url:str, time=1):
         """
         Go to URL provided and wait for page to load.
         """
-        self.page = self.driver.get(url)
+        page = self.driver.get(url)
         sleep(time)
-        return self.page
+        return page
     
     def quit(self):
         self.driver.quit()
         return
 
-    def find_elements(self, xpath=""):
+    def find_elements(self, xpath:str):
         """
         Returns list of elements with specified xpath.
         """
-        self.elements = self.driver.find_elements_by_xpath(xpath)
-        return self.elements
+        elements = self.driver.find_elements_by_xpath(xpath)
+        return elements
 
-    def get_text(self, xpath=""):
+    def find_element_by_type(self,type:str):
+        """
+        Returns element with specified type.
+        """
+        element = self.driver.find_element_by_xpath(f'//[@type={type}')
+       
+
+    def get_text(self, xpath:str):
         """
         Returns text from the element specified
         """
-        self.text = self.driver.find_element_by_xpath(xpath).text
-        return self.text
+        text = self.driver.find_element_by_xpath(xpath).text
+        return text
