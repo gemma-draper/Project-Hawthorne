@@ -1,7 +1,19 @@
 # Project Hawthorne
 
-This is the repo for my first project with AiCore. 
+A Python web scraper for collecting cocktail recipes from user submitted recipe websites.
 
-Part 1:
-Scraping drink recipes.
+This project is under construction.
 
+## Libraries & dependencies
+
+Requires the [selenium](https://selenium-python.readthedocs.io/) library.
+
+Requires [Chromedriver](https://chromedriver.chromium.org/).
+
+## Motivation
+
+Project Hawthorne is a data piplines project for AiCore. The data collected using this scraper will later be used to train a ML model.
+
+## Feedback
+
+Feedback on this project is welcome. Find me on [LinkedIn](https://www.linkedin.com/in/gemma-l-draper/).
