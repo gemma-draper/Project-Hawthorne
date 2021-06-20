@@ -82,8 +82,21 @@ for i in range(clean_page_count):
         drinks_from_all_recipes.append(drink_info.copy())
 
 print(drinks_from_all_recipes)
+#%%
+drink_dict = drinks_from_all_recipes[1]
+d.get(drink_dict['url'])
+this_drink_ingredients = d.find_elements('//*[@itemprop="ingredients"]')
+for i in range(len(this_drink_ingredients)):
+    key = "ingredient_" + str(i)
+    value = this_drink_ingredients[i].get_attribute('data-original')
+    drink_dict[key] = value
 
+print(drink_dict)
 #%%
 #get rating
+for drink_dict in drinks_from_all_recipes:
+
+    d.get(drink_dict['url'])
+    all_ingredients = d.find_elements('//*[@itemprop="ingredients"]')
 
 #%%
