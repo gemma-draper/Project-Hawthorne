@@ -31,12 +31,19 @@ class Driver:
         elements = self.driver.find_elements_by_xpath(xpath)
         return elements
 
-    def find_element_by_type(self,type:str):
+    def find_element(self, xpath:str):
         """
-        Returns element with specified type.
+        Returns an element with specified xpath.
         """
-        element = self.driver.find_element_by_xpath(f"//[@type='{type}']")
+        element = self.driver.find_element_by_xpath(xpath)
         return element
+
+    # def find_element_by_type(self,type:str):
+    #     """
+    #     Returns element with specified type.
+    #     """
+    #     element = self.driver.find_element_by_xpath(f"//[@type=\'{type}\']")
+    #     return element
        
 
     def get_text(self, xpath:str):
