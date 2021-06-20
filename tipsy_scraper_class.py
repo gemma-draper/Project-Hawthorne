@@ -47,8 +47,43 @@ class Tipsy():
         return self.all_drinks
 
 
+
 # test the functions.
 # tipsy = Tipsy()
 
 # category_info = tipsy.get_category_urls()
 # drinks_info = tipsy.get_drinks_urls()
+
+# for dictionary in drinks_info:
+#     # go to each recipe url
+#     tipsy.d.get(dictionary['url'])
+#%%
+d = Driver()
+d.get('http://allrecipes.co.uk/recipes/drink-recipes.aspx')
+drink_recipes_element = d.find_element('//*[text()="Drink recipes"]')
+all_recipes_url = drink_recipes_element.find_element_by_xpath('..').get_attribute('href')
+
+d.get(all_recipes_url)
+drinks_from_all_recipes = []
+
+page_count = d.find_element('//div[contains(@class, "pageCount")]').text
+clean_page_count = int(page_count.split()[-1])
+base_url = "http://allrecipes.co.uk/recipes/drink-recipes.aspx?page="
+
+for i in range(clean_page_count):
+    d.get(base_url + str(i+1))
+    #get all the names and urls
+    drinks_on_this_page = d.find_elements('//div[contains(@class, "row recipe")]')
+    for drink in drinks_on_this_page:
+        drink_info = {}
+        name_node = drink.find_element_by_xpath('.//a[@itemprop="name"]')
+        drink_info['name'] = name_node.text
+        drink_info['url'] = name_node.get_attribute('href')
+        drinks_from_all_recipes.append(drink_info.copy())
+
+print(drinks_from_all_recipes)
+
+#%%
+#get rating
+
+#%%

@@ -12,6 +12,7 @@ from driver_class import Driver
 d = Driver()
 d.get('https://tipsybartender.com/drinks/all/')
 
+
 # store all category names and urls in a list of dicts.
 drinks_categories = []
 category_dict = {}
@@ -42,7 +43,6 @@ for category in drinks_categories:
             drink_info['url'] = drink.get_attribute('href')
             all_drinks = all_drinks.append(drink_info,ignore_index=True)
             
-
         
 d.quit()
 #%%
