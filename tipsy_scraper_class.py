@@ -85,18 +85,24 @@ print(drinks_from_all_recipes)
 #%%
 drink_dict = drinks_from_all_recipes[1]
 d.get(drink_dict['url'])
-this_drink_ingredients = d.find_elements('//*[@itemprop="ingredients"]')
-for i in range(len(this_drink_ingredients)):
-    key = "ingredient_" + str(i)
-    value = this_drink_ingredients[i].get_attribute('data-original')
-    drink_dict[key] = value
 
-print(drink_dict)
-#%%
-#get rating
-for drink_dict in drinks_from_all_recipes:
-
-    d.get(drink_dict['url'])
+def get_ingredients(drink_dict):
     all_ingredients = d.find_elements('//*[@itemprop="ingredients"]')
+    for i in range(len(this_drink_ingredients)):
+        key = "ingredient_" + str(i)
+        value = all_ingredients[i].get_attribute('data-original')
+        drink_dict[key] = value
+    return drink_dict
+
+#%%
+#get yield
+recipe_yield = d.find_element('//*[@itemprop="recipeYield"]/span')
+drink_dict['recipe_yield'] = recipe_yield.text
+#%%
+recipe_description = d.find_element('//p[@itemprop="description"]')
+drink_dict['description'] = recipe_description.text
+#%%
+from pprint import pprint
+pprint(drink_dict)
 
 #%%
