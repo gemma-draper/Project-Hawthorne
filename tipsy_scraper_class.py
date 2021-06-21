@@ -131,17 +131,20 @@ def clean_star_rating(messy=messy_star_rating):
     return clean
 
 #get star rating
-def get_star_rating(drink_dict=drink_dict):
+def get_n_reviews_and_rating(drink_dict=drink_dict):
     star_rating_box = d.find_element('//span[contains(@class, "mediumStar")]')
     messy_star_rating = star_rating_box.get_attribute('class')
+    messy_n_reviews = star_rating_box.find_element_by_xpath('../*[contains(@id, "Count")]').text
+
     drink_dict['star_rating'] = clean_star_rating()
+    drink_dict['n_reviews'] = int(messy_n_reviews.lstrip('( ').rstrip(') '))
     return drink_dict
 
 drink_dict = get_ingredients()
 drink_dict = get_yield()
 drink_dict = get_description()
 drink_dict = get_method() 
-drink_dict = get_star_rating()
+drink_dict = get_n_reviews_and_rating()
 
 
 from pprint import pprint
