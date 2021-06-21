@@ -96,13 +96,18 @@ def get_ingredients(drink_dict):
 
 drink_dict = get_ingredients(drink_dict)
 
-from pprint import pprint
-pprint(drink_dict)
 
 #%%
 #get yield
-recipe_yield = d.find_element('//*[@itemprop="recipeYield"]/span')
-drink_dict['recipe_yield'] = recipe_yield.text
+def get_yield(drink_dict):
+    recipe_yield = d.find_element('//*[@itemprop="recipeYield"]/span')
+    drink_dict['recipe_yield'] = recipe_yield.text
+    return drink_dict
+
+drink_dict = get_yield(drink_dict)
+
+from pprint import pprint
+pprint(drink_dict)
 #%%
 #get description
 recipe_description = d.find_element('//p[@itemprop="description"]')
