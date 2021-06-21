@@ -83,6 +83,9 @@ for i in range(clean_page_count):
 
 print(drinks_from_all_recipes)
 #%%
+
+import re
+
 drink_dict = drinks_from_all_recipes[1]
 d.get(drink_dict['url'])
 
@@ -90,7 +93,7 @@ def get_ingredients(drink_dict=drink_dict):
     all_ingredients = d.find_elements('//*[@itemprop="ingredients"]')
     for i in range(len(all_ingredients)):
         key = "ingredient_" + str(i)
-        value = all_ingredients[i].get_attribute('data-original')
+        value = all_ingredients[i].text
         drink_dict[key] = value
     return drink_dict
 
@@ -115,16 +118,34 @@ def get_method(drink_dict=drink_dict):
         drink_dict[key] = value
     return drink_dict
 
+def clean_star_rating(messy=messy_star_rating):
+    """Takes a string containing star rating.
+    Removes all non-numeric chars.
+    Returns star rating as float.
+    """
+    messy = re.sub('[^0-9]', "", messy)
+    if len(messy) == 2:
+        clean = float(messy[0] + "." + messy[1])
+    else:
+        clean = float(messy)
+    return clean
+
+#get star rating
+def get_star_rating(drink_dict=drink_dict):
+    star_rating_box = d.find_element('//span[contains(@class, "mediumStar")]')
+    messy_star_rating = star_rating_box.get_attribute('class')
+    drink_dict['star_rating'] = clean_star_rating()
+    return drink_dict
+
 drink_dict = get_ingredients()
 drink_dict = get_yield()
 drink_dict = get_description()
 drink_dict = get_method() 
+drink_dict = get_star_rating()
 
 
 from pprint import pprint
 pprint(drink_dict)
 
 #%%
-
-
-#%%
+# %%
