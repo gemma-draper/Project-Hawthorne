@@ -88,21 +88,32 @@ d.get(drink_dict['url'])
 
 def get_ingredients(drink_dict):
     all_ingredients = d.find_elements('//*[@itemprop="ingredients"]')
-    for i in range(len(this_drink_ingredients)):
+    for i in range(len(all_ingredients)):
         key = "ingredient_" + str(i)
         value = all_ingredients[i].get_attribute('data-original')
         drink_dict[key] = value
     return drink_dict
+
+drink_dict = get_ingredients(drink_dict)
+
+from pprint import pprint
+pprint(drink_dict)
 
 #%%
 #get yield
 recipe_yield = d.find_element('//*[@itemprop="recipeYield"]/span')
 drink_dict['recipe_yield'] = recipe_yield.text
 #%%
+#get description
 recipe_description = d.find_element('//p[@itemprop="description"]')
 drink_dict['description'] = recipe_description.text
 #%%
-from pprint import pprint
-pprint(drink_dict)
+#get method
+full_method =  d.find_elements('//*[@itemprop="recipeInstructions"]/li')
+    for i in range(len(this_drink_ingredients)):
+        key = "step_" + str(i)
+        value = full_method[i].find_element_by_xpath('./span').text
+        drink_dict[key] = value
+
 
 #%%
