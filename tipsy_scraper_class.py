@@ -86,7 +86,7 @@ print(drinks_from_all_recipes)
 drink_dict = drinks_from_all_recipes[1]
 d.get(drink_dict['url'])
 
-def get_ingredients(drink_dict):
+def get_ingredients(drink_dict=drink_dict):
     all_ingredients = d.find_elements('//*[@itemprop="ingredients"]')
     for i in range(len(all_ingredients)):
         key = "ingredient_" + str(i)
@@ -94,31 +94,37 @@ def get_ingredients(drink_dict):
         drink_dict[key] = value
     return drink_dict
 
-drink_dict = get_ingredients(drink_dict)
-
-
-#%%
 #get yield
-def get_yield(drink_dict):
+def get_yield(drink_dict=drink_dict):
     recipe_yield = d.find_element('//*[@itemprop="recipeYield"]/span')
     drink_dict['recipe_yield'] = recipe_yield.text
     return drink_dict
 
-drink_dict = get_yield(drink_dict)
-
-from pprint import pprint
-pprint(drink_dict)
-#%%
 #get description
-recipe_description = d.find_element('//p[@itemprop="description"]')
-drink_dict['description'] = recipe_description.text
-#%%
+def get_description(drink_dict=drink_dict):
+    recipe_description = d.find_element('//p[@itemprop="description"]')
+    drink_dict['description'] = recipe_description.text
+    return drink_dict
+
 #get method
-full_method =  d.find_elements('//*[@itemprop="recipeInstructions"]/li')
-    for i in range(len(this_drink_ingredients)):
+def get_method(drink_dict=drink_dict):
+    full_method =  d.find_elements('//*[@itemprop="recipeInstructions"]/li')
+    for i in range(len(full_method)):
         key = "step_" + str(i)
         value = full_method[i].find_element_by_xpath('./span').text
         drink_dict[key] = value
+    return drink_dict
+
+drink_dict = get_ingredients()
+drink_dict = get_yield()
+drink_dict = get_description()
+drink_dict = get_method() 
+
+
+from pprint import pprint
+pprint(drink_dict)
+
+#%%
 
 
 #%%
