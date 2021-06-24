@@ -111,6 +111,9 @@ def get_time(drink_dict=drink_dict):
     Scrapes preparation time.
     Takes drink_dict and returns it with prep_time.
     """
+    prep_time = d.find_element('//div[contains(@class,"stat1")]/span')
+    drink_dict['prep_time'] = prep_time
+    return drink_dict
 
 for drink_dict in drinks_from_all_recipes:
     d.get(drink_dict['url'])
