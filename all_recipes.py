@@ -1,6 +1,9 @@
+#%%
 import re
+import json
 from pprint import pprint
 from driver_class import Driver
+from pprint import pprint
 
 
 #init
@@ -9,12 +12,15 @@ d.get('http://allrecipes.co.uk/recipes/drink-recipes.aspx')
 drink_recipes_element = d.find_element('//*[text()="Drink recipes"]')
 all_recipes_url = drink_recipes_element.find_element_by_xpath('..').get_attribute('href')
 drinks_from_all_recipes = []
+# drink_dict = {}
 
 # get drink names and urls
 d.get(all_recipes_url)
 page_count = d.find_element('//div[contains(@class, "pageCount")]').text
 clean_page_count = int(page_count.split()[-1])
 base_url = "http://allrecipes.co.uk/recipes/drink-recipes.aspx?page="
+
+#%%
 
 for i in range(clean_page_count):
     d.get(base_url + str(i+1))
@@ -28,11 +34,11 @@ for i in range(clean_page_count):
         drinks_from_all_recipes.append(drink_info.copy())
 
 print(drinks_from_all_recipes)
-
-def get_ingredients(drink_dict=drink_dict):
+#%%
+def get_ingredients(drink_dict):
     """
     Scrapes drink ingredients.
-    Takes drink_dict, returns drink_dict with drink_dict['ingredients'] = ingredients_dict.
+    Takes drink_dict, returns drink_dict key and value for each ingredient.
     """
     all_ingredients = d.find_elements('//*[@itemprop="ingredients"]')
     ingredients_dict = {}
@@ -44,7 +50,7 @@ def get_ingredients(drink_dict=drink_dict):
     return drink_dict
 
 #get yield
-def get_yield(drink_dict=drink_dict):
+def get_yield(drink_dict):
     """
     Scrapes recipe yield.
     Takes drink_dict, returns it with recipe_yield.
@@ -54,7 +60,7 @@ def get_yield(drink_dict=drink_dict):
     return drink_dict
 
 #get description
-def get_description(drink_dict=drink_dict):
+def get_description(drink_dict):
     """
     Scrapes recipe description.
     Takes drink_dict, returns it with description.
@@ -64,7 +70,7 @@ def get_description(drink_dict=drink_dict):
     return drink_dict
 
 #get method
-def get_method(drink_dict=drink_dict):
+def get_method(drink_dict):
     """
     Scrapes recipe method.
     Takes drink_dict, returns it with drink_dict['method'] = method_dict.
@@ -92,21 +98,21 @@ def clean_star_rating(messy):
     return clean
 
 #get star rating and number of reviews
-def get_n_reviews_and_rating(drink_dict=drink_dict):
+def get_n_ratings_and_rating(drink_dict):
     """
-    Scrapes star rating and number of reviews.
-    Takes drink_dict and returns it with star_rating and n_reviews.
+    Scrapes star rating and number of ratings.
+    Takes drink_dict and returns it with star_rating and n_ratings.
     """
     star_rating_box = d.find_element('//span[contains(@class, "mediumStar")]')
     
     messy_star_rating = star_rating_box.get_attribute('class')
-    messy_n_reviews = star_rating_box.find_element_by_xpath('../*[contains(@id, "Count")]').text
+    messy_n_ratings = star_rating_box.find_element_by_xpath('../*[contains(@id, "Count")]').text
 
     drink_dict['star_rating'] = clean_star_rating(messy_star_rating)
-    drink_dict['n_reviews'] = int(messy_n_reviews.lstrip('( ').rstrip(') '))
+    drink_dict['n_ratings'] = int(messy_n_ratings.lstrip('( ').rstrip(') '))
     return drink_dict
 
-def get_time(drink_dict=drink_dict):
+def get_time(drink_dict):
     """
     Scrapes preparation time.
     Takes drink_dict and returns it with prep_time.
@@ -114,15 +120,19 @@ def get_time(drink_dict=drink_dict):
     prep_time = d.find_element('//div[contains(@class,"stat1")]/span')
     drink_dict['prep_time'] = prep_time
     return drink_dict
+#%%
+def get_everything(list=drinks_from_all_recipes):
+    for drink_dict in (drinks_from_all_recipes):
+        d.get(drink_dict['url'])
 
-for drink_dict in drinks_from_all_recipes:
-    d.get(drink_dict['url'])
-    drink_dict = get_ingredients()
-    drink_dict = get_yield()
-    drink_dict = get_description()
-    drink_dict = get_method() 
-    drink_dict = get_n_reviews_and_rating()
+        drink_dict = get_ingredients(drink_dict)
+        drink_dict = get_yield(drink_dict)
+        drink_dict = get_description(drink_dict)
+        drink_dict = get_method(drink_dict) 
+        drink_dict = get_n_ratings_and_rating(drink_dict)
+        drink_dict = get_time(drink_dict)
+        pprint(drinks_from_all_recipes)
+    return drinks_from_all_recipes
 
+drinks_from_all_recipes = get_everything()
 
-from pprint import pprint
-pprint(drink_dict)
