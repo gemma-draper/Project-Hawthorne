@@ -136,3 +136,5 @@ def get_everything(list=drinks_from_all_recipes):
 
 drinks_from_all_recipes = get_everything()
 
+with open('all_recipes_data.txt', 'w') as f:
+    json.dump(drinks_from_all_recipes, f)
