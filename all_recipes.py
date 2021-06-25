@@ -1,10 +1,9 @@
-#%%
+
 import re
 import json
 from pprint import pprint
 from driver_class import Driver
 from pprint import pprint
-
 
 #init
 d = Driver()
@@ -12,7 +11,7 @@ d.get('http://allrecipes.co.uk/recipes/drink-recipes.aspx')
 drink_recipes_element = d.find_element('//*[text()="Drink recipes"]')
 all_recipes_url = drink_recipes_element.find_element_by_xpath('..').get_attribute('href')
 drinks_from_all_recipes = []
-# drink_dict = {}
+
 
 # get drink names and urls
 d.get(all_recipes_url)
@@ -121,8 +120,10 @@ def get_time(drink_dict):
     drink_dict['prep_time'] = prep_time
     return drink_dict
 #%%
+
 def get_everything(list=drinks_from_all_recipes):
-    for drink_dict in (drinks_from_all_recipes):
+    count = 0
+    for drink_dict in list:
         d.get(drink_dict['url'])
 
         drink_dict = get_ingredients(drink_dict)
@@ -131,10 +132,12 @@ def get_everything(list=drinks_from_all_recipes):
         drink_dict = get_method(drink_dict) 
         drink_dict = get_n_ratings_and_rating(drink_dict)
         drink_dict = get_time(drink_dict)
-        pprint(drinks_from_all_recipes)
-    return drinks_from_all_recipes
+        print(count)
+        count += 1
+    return list
 
+#%%
 drinks_from_all_recipes = get_everything()
-
+import json
 with open('all_recipes_data.txt', 'w') as f:
-    json.dump(drinks_from_all_recipes, f)
+    json.dump(drinks_from_all_recipes, f, skipkeys=True)
