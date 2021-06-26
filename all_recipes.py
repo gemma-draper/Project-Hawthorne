@@ -1,16 +1,14 @@
-
 import re
 import json
 from driver_class import Driver
 import pandas as pd
 from pprint import pprint
+d = Driver()
 
-#%%
-def get_basic_info():
+def get_basic_info(d=d):
     """
     Returns name, url and id for every drink on site as list of dicts.
     """
-    d = Driver()
     d.get('http://allrecipes.co.uk/recipes/drink-recipes.aspx')
     drink_recipes_element = d.find_element('//*[text()="Drink recipes"]')
     all_recipes_url = drink_recipes_element.find_element_by_xpath('..').get_attribute('href')
@@ -34,14 +32,21 @@ def get_basic_info():
             drinks.append(drink_info.copy())
     return drinks
 
+# get and print basic info for more drinks
 drinks_from_all_recipes = get_basic_info()
 pprint(drinks_from_all_recipes)
-#%%
-def get_ingredients(drink_dict):
+
+# save the basic data
+with open('basic_data.txt', 'w') as f:
+    json.dump(drinks_from_all_recipes, f)
+
+# define some more functions
+def get_ingredients(drink_dict, d=d):
     """
     Scrapes drink ingredients.
     Takes drink_dict, returns drink_dict key and value for each ingredient.
     """
+    
     all_ingredients = d.find_elements('//*[@itemprop="ingredients"]')
     ingredients_dict = {}
     for i in range(len(all_ingredients)):
@@ -52,7 +57,7 @@ def get_ingredients(drink_dict):
     return drink_dict
 
 #get yield
-def get_yield(drink_dict):
+def get_yield(drink_dict, d=d):
     """
     Scrapes recipe yield.
     Takes drink_dict, returns it with recipe_yield.
@@ -62,7 +67,7 @@ def get_yield(drink_dict):
     return drink_dict
 
 #get description
-def get_description(drink_dict):
+def get_description(drink_dict, d=d):
     """
     Scrapes recipe description.
     Takes drink_dict, returns it with description.
@@ -72,7 +77,7 @@ def get_description(drink_dict):
     return drink_dict
 
 #get method
-def get_method(drink_dict):
+def get_method(drink_dict, d=d):
     """
     Scrapes recipe method.
     Takes drink_dict, returns it with drink_dict['method'] = method_dict.
@@ -100,7 +105,7 @@ def clean_star_rating(messy):
     return clean
 
 #get star rating and number of reviews
-def get_n_ratings_and_rating(drink_dict):
+def get_n_ratings_and_rating(drink_dict, d=d):
     """
     Scrapes star rating and number of ratings.
     Takes drink_dict and returns it with star_rating and n_ratings.
@@ -114,21 +119,24 @@ def get_n_ratings_and_rating(drink_dict):
     drink_dict['n_ratings'] = int(messy_n_ratings.lstrip('( ').rstrip(') '))
     return drink_dict
 
-def get_time(drink_dict):
+def get_time(drink_dict, d=d):
     """
     Scrapes preparation time.
     Takes drink_dict and returns it with prep_time.
     """
     prep_time = d.find_element('//div[contains(@class,"stat1")]/span')
-    drink_dict['prep_time'] = prep_time
+    try:
+        drink_dict['prep_time'] = prep_time.text
+    except AttributeError:
+        drink_dict['prep_time'] = ""
     return drink_dict
 
-def get_everything(list=drinks_from_all_recipes):
+def get_everything(list=drinks_from_all_recipes, d=d):
     """
     Calls fuctions to get ingredients, yield, description, method, ratings, and prep time.
     Returns list of dicts, each dict containing data for one drink.
     """
-    for drink_dict in list:
+    for drink_dict in list[968:]:
         d.get(drink_dict['url'])
 
         drink_dict = get_ingredients(drink_dict)
@@ -137,17 +145,26 @@ def get_everything(list=drinks_from_all_recipes):
         drink_dict = get_method(drink_dict) 
         drink_dict = get_n_ratings_and_rating(drink_dict)
         drink_dict = get_time(drink_dict)
-        print(drink_dict['id'])
+        pprint(drink_dict)
         
     return list
 
-#%%
-
+# run the get_everything function
 drinks_from_all_recipes = get_everything()
 
-#%%
+# convert to a dataframe 
+drinks_df = pd.DataFrame(drinks_from_all_recipes)
+# set id col as index
+drinks_df.set_index('id', inplace=True)
+# expand the ingredients and methods dictionaries
+drinks_df = pd.concat([drinks_df, pd.json_normalize(drinks_df['ingredients'])], axis=1)
+drinks_df = pd.concat([drinks_df, pd.json_normalize(drinks_df['method'])], axis=1)
+# drop the dictionaries
+drinks_df = drinks_df.drop(['ingredients', 'method'], axis=1)
 
+# convert df to json
+for_json = drinks_df.to_json(orient='columns')
 
-with open('all_recipes_data.txt', 'w') as f:
-    json.dump(drinks_from_all_recipes, f, skipkeys=True)
-# %%
+# export to json
+with open('all_recipes_df_data.txt', 'w') as f:
+    json.dump(for_json, f)
