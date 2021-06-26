@@ -1,38 +1,48 @@
-
+#%%
 import re
 import json
-from pprint import pprint
 from driver_class import Driver
+import pandas as pd
 from pprint import pprint
 
 #init
-d = Driver()
-d.get('http://allrecipes.co.uk/recipes/drink-recipes.aspx')
-drink_recipes_element = d.find_element('//*[text()="Drink recipes"]')
-all_recipes_url = drink_recipes_element.find_element_by_xpath('..').get_attribute('href')
-drinks_from_all_recipes = []
+
 
 
 # get drink names and urls
-d.get(all_recipes_url)
-page_count = d.find_element('//div[contains(@class, "pageCount")]').text
-clean_page_count = int(page_count.split()[-1])
-base_url = "http://allrecipes.co.uk/recipes/drink-recipes.aspx?page="
+
 
 #%%
-
-for i in range(clean_page_count):
-    d.get(base_url + str(i+1))
-    #get all the names and urls
-    drinks_on_this_page = d.find_elements('//div[contains(@class, "row recipe")]')
-    for drink in drinks_on_this_page:
-        drink_info = {}
-        name_node = drink.find_element_by_xpath('.//a[@itemprop="name"]')
-        drink_info['name'] = name_node.text
-        drink_info['url'] = name_node.get_attribute('href')
-        drinks_from_all_recipes.append(drink_info.copy())
-
-print(drinks_from_all_recipes)
+def get_basic_info():
+    """
+    Returns name, url and id for every drink on site as list of dicts.
+    """
+    d = Driver()
+    d.get('http://allrecipes.co.uk/recipes/drink-recipes.aspx')
+    drink_recipes_element = d.find_element('//*[text()="Drink recipes"]')
+    all_recipes_url = drink_recipes_element.find_element_by_xpath('..').get_attribute('href')
+    drinks = []
+    id = 0
+    d.get(all_recipes_url)
+    page_count = d.find_element('//div[contains(@class, "pageCount")]').text
+    clean_page_count = int(page_count.split()[-1])
+    base_url = "http://allrecipes.co.uk/recipes/drink-recipes.aspx?page="
+    for i in range(clean_page_count):
+        d.get(base_url + str(i+1))
+        #get all the names and urls
+        drinks_on_this_page = d.find_elements('//div[contains(@class, "row recipe")]')
+        for drink in drinks_on_this_page:
+            drink_info = {}
+            name_node = drink.find_element_by_xpath('.//a[@itemprop="name"]')
+            drink_info['id'] = id
+            id += 1
+            drink_info['name'] = name_node.text
+            drink_info['url'] = name_node.get_attribute('href')
+            drinks.append(drink_info.copy())
+    return drinks
+    
+drinks_from_all_recipes = get_basic_info()
+pprint(drinks_from_all_recipes)
 #%%
 def get_ingredients(drink_dict):
     """
@@ -119,7 +129,6 @@ def get_time(drink_dict):
     prep_time = d.find_element('//div[contains(@class,"stat1")]/span')
     drink_dict['prep_time'] = prep_time
     return drink_dict
-#%%
 
 def get_everything(list=drinks_from_all_recipes):
     count = 0
@@ -137,7 +146,12 @@ def get_everything(list=drinks_from_all_recipes):
     return list
 
 #%%
+
 drinks_from_all_recipes = get_everything()
-import json
+
+#%%
+
+
 with open('all_recipes_data.txt', 'w') as f:
     json.dump(drinks_from_all_recipes, f, skipkeys=True)
+# %%
