@@ -1,16 +1,9 @@
-#%%
+
 import re
 import json
 from driver_class import Driver
 import pandas as pd
 from pprint import pprint
-
-#init
-
-
-
-# get drink names and urls
-
 
 #%%
 def get_basic_info():
@@ -40,7 +33,7 @@ def get_basic_info():
             drink_info['url'] = name_node.get_attribute('href')
             drinks.append(drink_info.copy())
     return drinks
-    
+
 drinks_from_all_recipes = get_basic_info()
 pprint(drinks_from_all_recipes)
 #%%
@@ -131,7 +124,10 @@ def get_time(drink_dict):
     return drink_dict
 
 def get_everything(list=drinks_from_all_recipes):
-    count = 0
+    """
+    Calls fuctions to get ingredients, yield, description, method, ratings, and prep time.
+    Returns list of dicts, each dict containing data for one drink.
+    """
     for drink_dict in list:
         d.get(drink_dict['url'])
 
@@ -141,8 +137,8 @@ def get_everything(list=drinks_from_all_recipes):
         drink_dict = get_method(drink_dict) 
         drink_dict = get_n_ratings_and_rating(drink_dict)
         drink_dict = get_time(drink_dict)
-        print(count)
-        count += 1
+        print(drink_dict['id'])
+        
     return list
 
 #%%
