@@ -1,4 +1,5 @@
 #%%
+from typing import Mapping
 import pandas as pd
 import numpy as np
 import json
@@ -37,6 +38,9 @@ df['recipe_yield'].value_counts()
 df.drop('recipe_yield', inplace=True, axis=1)
 
 # %%
-df.head()
+# Null values currently set to None. Convert to np.NaN
+df.fillna(value=np.nan, inplace=True)
 
+# %%
+df['ingredient_5']
 # %%
