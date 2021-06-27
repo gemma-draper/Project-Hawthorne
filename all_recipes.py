@@ -13,7 +13,7 @@ def get_basic_info(d=d):
     drink_recipes_element = d.find_element('//*[text()="Drink recipes"]')
     all_recipes_url = drink_recipes_element.find_element_by_xpath('..').get_attribute('href')
     drinks = []
-    id = 0
+    id = 1
     d.get(all_recipes_url)
     page_count = d.find_element('//div[contains(@class, "pageCount")]').text
     clean_page_count = int(page_count.split()[-1])
