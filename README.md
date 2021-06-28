@@ -24,7 +24,7 @@ Work packages:
 * bbcgoodfood.com scraper 🚧
 * tipsybartender.com scraper 🚧
 * food52.com scraper 🚧
-* 
+
 ## Libraries & dependencies
 
 Libraries required: [selenium](https://selenium-python.readthedocs.io/), pandas, re, json, pprint, sqlalchemy and psycopg2.
