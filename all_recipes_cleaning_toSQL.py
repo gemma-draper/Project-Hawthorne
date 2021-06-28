@@ -41,5 +41,36 @@ df.drop('recipe_yield', inplace=True, axis=1)
 df.fillna(value=np.nan, inplace=True)
 
 # %%
-df['ingredient_5']
+import psycopg2
+
+conn = psycopg2.connect()
+
+cursor = conn.cursor()
+#%%
+cursor.execute("CREATE TABLE all_recipes (id VARCHAR(4) PRIMARY KEY)")
+conn.commit()
+
+#%%
+
+# create columns of the coresponding type for all columns in the dataframe
+for col_name in df.columns:
+if col_name == 'star_rating':
+cursor.execute(f"ALTER TABLE all_recipes ADD COLUMN {col_name} NUMERIC(2,1)")
+conn.commit()
+elif col_name == 'n_ratings':
+cursor.execute(f"ALTER TABLE all_recipes ADD COLUMN {col_name} NUMERIC(4)")
+conn.commit()
+else:
+cursor.execute(f"ALTER TABLE all_recipes ADD COLUMN {col_name} TEXT")
+conn.commit()
+
 # %%
+# create sqlalchemy engine to use with df.to_sql
+from sqlalchemy import create_engine
+engine = create_engine('postgresql://{user}:{password}@{host}:{port}/{database}')
+
+# add data to the postgres table
+df.to_sql('all_recipes', engine, if_exists='append')
+
+# %%
+
