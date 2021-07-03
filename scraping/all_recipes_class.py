@@ -48,6 +48,6 @@ class All_recipes_scraper():
                 self.drinks.append(drink_info.copy())
         return self.drinks
 
-a_r_scraper = All_recipes_scraper()
-basic_info = a_r_scraper.get_basic_info()
+scraper = All_recipes_scraper()
+basic_info = scraper.get_basic_info() # tested
 # %%
