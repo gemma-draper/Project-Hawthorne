@@ -1,32 +1,29 @@
 #%%
-from os import remove
 from nltk import ngrams
 import numpy as np
 import pandas as pd
 import psycopg2
 import re
 from sqlalchemy import create_engine
-#%%
-def get_data():
-    """
-    Get all from all_recipes table.
-    Returns a pandas DataFrame.
-    Requires credentials.txt file in the same dir with database credentials.
 
-    """
-    credentials = {}
-    with open('credentials.txt','r') as f:
-        credentials = eval(f.read())
+"""
+Get all from all_recipes table.
+Returns a pandas DataFrame.
+Requires credentials.txt file in the same dir with database credentials.
 
-    # unpack credentials dict into variables
-    for k,v in credentials.items(): 
-        vars()[k] = v 
+"""
+credentials = []
+with open('credentials.txt','r') as f:
+    credentials = eval(f.read())
 
-    engine = create_engine(f'postgresql://{user}:{password}@{host}:{port}/{database}')
-    df = pd.read_sql_query("SELECT * FROM all_recipes", engine)
-    return df
+# unpack credentials dict into variables
+for k,v in credentials.items(): 
+    vars()[k] = v 
 
-df = get_data()
+engine = create_engine(f'postgresql://{user}:{password}@{host}:{port}/{database}')
+df = pd.read_sql_query("SELECT * FROM all_recipes", engine)
+
+
 df.set_index('id', inplace=True)
 
 # filter df ingredient cols
@@ -40,13 +37,20 @@ for col in ingredient_df.columns:
 
 # remove nulls
 ingredients_list = [ele for ele in ingredients_list if ele]
-#%%
 
 #%%
+
 tokens = []
 for element in ingredients_list:
-    gram = ngrams(element.split(), n=1)    
+    gram = ngrams(element.split(), n=1)  
     tokens.extend(element.split())
+
+# remove non alpha-numeric characters, like trade marks and hyphens
+tokens = [re.sub("[^a-zA-Z0-9]","",token) for token in tokens]
+# remove rows which contain numbers
+def has_numbers(input):
+    return any(char.isdigit() for char in input)
+tokens = [token for token in tokens if not has_numbers(token)]
 
 word_freq = {}
 for token in tokens:
